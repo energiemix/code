@@ -1,0 +1,27 @@
+bookdown::gitbook:
+  css: style.css
+  config:
+    toc:
+      before: |
+        <li><a href="energiemix.github.io"><b>De energietransitie doorgerekend</b></a>
+        <a href="./voor-knud.html"><i>Toewijding</i></a>
+        </li>
+      after: |
+        <li><a href="./faq.html" target="blank">FAQ</a></li>
+    edit: https://github.com/USERNAME/REPO/edit/BRANCH/%s
+    download: ["pdf"]
+    sharing: 
+      whatsapp: true
+      twitter: true
+      facebook: true
+      linkedin: true
+bookdown::pdf_book:
+  includes:
+    in_header: preamble-latex.tex
+    before_body: dedication.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+  keep_md: yes
+  toc_depth: 5
+bookdown::epub_book: default

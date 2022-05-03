@@ -1,0 +1,298 @@
+# Zonne-energie
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(cache=TRUE) # fig.pos="!H"
+options(scipen=999)
+library(knitr, quietly=TRUE); library(kableExtra, quietly = TRUE)
+library(qtl, quietly = TRUE)
+
+source("Energietransitie8.R")
+
+```
+
+Het doel van dit hoofdstuk is een schatting te geven van de energie-opbrengst en het ruimtegebruik van zonne-energie. Daarnaast wordt gekeken naar de gevolgen van fluctuaties in de opbrengst van zonne-energie. 
+
+## Variatie in zonneschijn
+
+Figuur 3.1 laat op dagbasis zien hoeveel straling Nederland in 2007 ontving, hetzelfde jaar als er bij wind werd gekozen. Het lijkt een jaar te zijn met een vrij slechte zomer (weinig zon), maar het algemene beeld is vergelijkbaar met andere jaren. Op de breedtegraad van Nederland varieert de invalshoek van de zonnestraling gedurende het jaar aanzienlijk. De zon staat hoog aan de hemel in de zomer en laag in de winter. Dat is te zien aan de golfbeweging in de grafiek, die een beetje een sinusoïde vorm heeft. Het seizoenseffect is groot en tegelijkertijd regelmatig. Het andere regelmatige ritme wat betreft de intensiteit van de straling, niet zichtbaar in deze grafiek, is natuurlijk het dag-nachtritme. ’s Nachts is er geen straling te verwachten; op het midden van de dag het meeste. Tot zover is het allemaal heel voorspelbaar.
+
+```{r zon2007, echo=FALSE, results='asis', fig.cap="", fig.pos="!b", fig.height=3, fig.width=5, fig.align='center'}
+
+# Jaarlijkse instraling 
+zon2007 = Bereken.Opbrengst.Zon(PERIODICITEIT="daily", periode="2007")
+perio   = periodiciteit.per.jaar(zon2007)
+ggplot(zon2007, aes(x=Index,y=straling.Wm2)) +
+  theme_maas() +
+  geom_bar(stat="identity", aes(fill='tomato2')) + 
+  labs(title="Figuur 3.1. De zoninstraling van dag op dag")+
+  theme(legend.position = "none", axis.title.x = element_blank(), axis.title.y = element_text(size = 9)) +
+  ylab(expression("Instraling (W / m"^2*")"))
+
+```
+
+Figuur 3.1 laat ook zien dat er, hier met name in de zomer, flinke gaten vallen in de hoeveelheid ontvangen zonnestraling. Dat heeft te maken met het weer. Bewolking heeft een grote invloed op de opbrengst van zonnecellen. Als het bewolkt is, is het niet ongewoon dat een zonnecel maar een tiende levert van wat deze in volle zon zou leveren ([MacKay](https://www.withouthotair.com/download.html), p45). Het weer kan dus een grote invloed hebben op de opbrengst van zonnecellen.
+
+## De energie-opbrengst van zonnecellen 
+
+Zonnecellen zetten straling om in elektriciteit. De relatie tussen energie-opbrengst van zonnecellen en de instralingswaarden zoals deze bijvoorbeeld door het KNMI worden gegeven, is betrekkelijk eenvoudig. De opbrengst is gelijk aan het rendement van het zonnepaneel maal de hoeveelheid ingevallen straling. Heeft een bepaald soort zonnecellen bijvoorbeeld een rendement van 20% en is de hoeveelheid ingevallen straling gelijk aan 1100 kWh per m^2^ per jaar, dan zal een vierkante meter van deze zonnecellen in een jaar 220 kWh opbrengen. In tegenstelling tot wind is de relatie tussen straling en opbrengst bij zon lineair. Dat maakt de zaak een stuk eenvoudiger.
+
+Een belangrijke vraag is daarmee welk rendement er voor zonnecellen verwacht mag worden. Een hoger rendement bepaalt de hoeveelheid oppervlak dat voor zonnecellen nodig is. Voor de *variatie* in de opbrengst maakt het niet uit, die blijft hetzelfde of er nu meer of minder efficiënte zonnecellen worden gebruikt. 
+
+Gewone zonnepanelen, zoals die nu beschikbaar zijn, zijn gevoelig voor licht van slechts één bepaalde golflengte (het paneel bestaat uit zogenaamde enkelvoudige of *single-junction* cellen). Het maximaal theoretisch rendement van een enkelvoudige cel is gebonden aan de [Shockley-Queisser limiet](https://en.wikipedia.org/wiki/Shockley%E2%80%93Queisser_limit) van ongeveer 34%. Commerciële cellen halen nu tot 24% rendement. Dat is al dicht in de buurt van de te verwachten praktische limiet van [ongeveer 26%](https://en.wikipedia.org/wiki/Solar_cell).
+
+Er bestaan ook cellen met [meervoudige juncties](https://en.wikipedia.org/wiki/Multi-junction_solar_cell) die een hoger rendement hebben dan cellen met een enkelvoudige junctie. Deze cellen bestaan uit verschillende materialen, waardoor er in principe uit verschillende golflengtes energie kan worden gewonnen. De theoretische limiet, bij een stapeling van een oneindige hoeveelheid lagen, is zo'n 69%. Het beste gerealiseerde rendement tot nu toe is 47%, maar daarbij werd zonlicht geconcentreerd. Het concentreren kost ruimte: een hoger rendement betekent dan ook niet automatisch een hogere opbrengst per vierkante meter. Zie [wikipedia/ solar cell efficiency](https://en.wikipedia.org/wiki/Solar_cell_efficiency) en verdere verwijzingen daarin. 
+
+\bigskip\noindent
+Voordat er gesproken kan worden over opbrengst, moet er gekozen worden van welk rendement er moet worden uitgegaan. De keuze zal ergens moeten liggen tussen de theoretische limiet van 69% voor meervoudige zonnecellen en 6% voor goedkope silicium-gebaseerde zonnecellen. Bij de berekeningen hier wordt uitgegaan van (duurdere) zonnecellen met een rendement van 20% (zie ook bijlage B.1 *Berekenen van opbrengst*). Dat zijn zonnecellen met een hoog rendement, weliswaar duur, maar wel algemeen beschikbaar. 
+
+De instralingsgegevens van het KNMI uit figuur 3.1 kunnen gebruikt worden om de opbrengst te berekenen van een vierkante kilometer zonnecellen. Er wordt van uitgegaan dat de zonnecellen tegen elkaar aan geplaatst worden, zonder enige tussenruimte. Figuur 3.2 toont deze energieopbrengst. 
+
+```{r opbrengstzon2007, echo=FALSE, results='asis', fig.cap="", fig.height=3, fig.width=5, fig.align='center'}
+
+gem_opbrengst = mean(zon2007$opbrengst.kWh.km2)/1e6 
+ggplot(data=zon2007, aes(x=Index,y=opbrengst.kWh.km2/1e6)) +
+  theme_maas() + 
+  labs(title    = "Figuur 3.2. Energie-opbrengst zonne-energie", 
+       subtitle = expression("Dagopbrengst van een km"^2*" zonnecellen"))+
+  ylab(expression("Opbrengst (10"^6*" kWh / km"^2*")")) + xlab("") +
+  #geom_line(size=0.5, color="blue") + # geom_point(color="blue") +
+  geom_bar(stat="identity", color="blue", width = 0.05) +
+  geom_hline(yintercept=gem_opbrengst, linetype="dashed", color = "red")
+
+totale.jaaropbrengst.kWh.m2 = round(sum(zon2007$opbrengst.kWh.km2/1e6)) # dit is 20% van de totale instraling, zijnde rond de 1000 kWh/m2
+
+# --- Berekening ruimtegebruik ---
+dta = Bereken.Opbrengst.Zon(PERIODICITEIT="10min", periode="2006::2015") 
+gem.jaaropbrengst  = mean(dta$opbrengst.kWh.km2) * periodiciteit.per.jaar(dta)
+# reality check: gem.jaaropbrengst/1e6 # klopt 213 kWh/m2
+benodigd.oppervlak.pct = round( 100* (Energieverbruik.NL.TWh*1e9/gem.jaaropbrengst) / Oppervlakte.Nederland.km2, 1) 
+
+```
+
+De zonnestraling die Nederland ontvangt is volgens het [KNMI](https://www.knmi.nl/over-het-knmi/nieuws/zonnestraling-in-2019) doorgaans rond 1000 à 1100 kWh per m^2^ per jaar. De berekende jaaropbrengst voor 2007, getoond in figuur 3.2, komt uit op `r totale.jaaropbrengst.kWh.m2` kWh voor een vierkante meter zonnepaneel. Voor een zonnepaneel met een effciëntie van 20% komt dat mooi in de buurt voor een gemiddelde instraling van iets boven de 1000 kWh. Het gebruik van een efficiënter paneel zou de opbrengst in figuur 3.2 verhogen, maar de vorm van de grafiek niet veranderen. Met andere woorden: de hoeveelheid fluctuatie blijft gelijk. 
+
+## Ruimtegebruik
+
+Laten we, net zoals bij windenergie werd gedaan, een denkbeeldig scenario nemen om een inschatting te kunnen maken van de hoeveelheid benodigde ruimte voor zonnecellen. Stel dat alle energie die Nederland gebruikt weer door een duurzame bron wordt opgewekt, ditmaal door zonne-energie.
+
+Net zoals bij wind wordt ook hier weer een periode van 10 jaar gebruikt, van 2006 tot en met 2015. Aan de hand van de gegevens van het KNMI wordt iedere 10 minuten, op basis van de straling in dat tijdsvak, de energie-opbrengst uitgerekend van een vierkante kilometer zonnecellen (belegd met panelen met een rendement van 20%). Als in deze periode van 10 jaar alle opbrengsten bij elkaar worden opgeteld en vervolgens een jaargemiddelde wordt berekend, dan volgt daaruit een opbrengst van `r round(gem.jaaropbrengst/1e6)` miljoen kWh per km^2^.
+
+Dan kan nu worden berekend hoeveel ruimte er nodig zou zijn in een scenario waarbij Nederland al zijn energie opwekt met behulp van de zon. Er wordt daarbij wederom vanuit gegaan dat de panelen zonder tussenruimte tegen elkaar aan geplaatst worden. Het totale energieverbruik van Nederland in 2019 was `r round(Energieverbruik.NL.TWh)` miljard kWh (zie hoofdstuk 1). 
+
+Hoeveel vierkante kilometer zonnepanelen zou er nodig zijn om het gehele energiegebruik van Nederland te dekken? Daarvoor delen we ons energieverbruik door de opbrengst van zonne-energie per vierkante kilometer:
+
+$$ \frac {`r round(Energieverbruik.NL.TWh)`\; miljard \; kWh} {`r round(gem.jaaropbrengst/1e6)` \; miljoen \; kWh/km^2} = `r round(Energieverbruik.NL.TWh*1e9/gem.jaaropbrengst)` \; km^2  $$
+\noindent
+Deelt men het oppervlak benodigd voor zonnecellen door het oppervlak van Nederland dan blijkt dat 
+
+$$ \frac {`r round(Energieverbruik.NL.TWh*1e9/gem.jaaropbrengst)` \; km^2} {`r Oppervlakte.Nederland.km2` \; km^2} = `r round( 100* (Energieverbruik.NL.TWh*1e9/gem.jaaropbrengst) / Oppervlakte.Nederland.km2, 1)` \% $$
+\noindent
+van Nederland nodig is om ons hele energieverbruik te dekken. Dat is grofweg de grootte van de provincie Zuid-Holland. Daarmee is zonne-energie veel efficiënter dan windenergie. De opbrengst per vierkante kilometer is veel hoger. 
+
+## Opbrengstfluctuaties
+
+De opbrengst van een zonnecel varieert met de hoeveelheid ingevallen straling op een bepaald moment. Bij windenergie bleek deze variatie tot substantiële tekorten te leiden. Hoe zit dat bij zon?  
+
+Figuur 3.3 geeft de opbrengstvariatie weer op maandbasis voor het jaar 2007. De aanname daarbij is weer dat Nederland iedere maand een gelijke hoeveelheid energie gebruikt en de panelen over het hele jaar genomen de vraag dekken. 
+
+```{r opbrengstvariatiezon2007, echo=FALSE, results='asis', fig.cap="", fig.pos="t", fig.height=3, fig.width=5, fig.align='center'}
+
+zon2007M   = Bereken.Opbrengst.Zon(PERIODICITEIT="monthly", periode="2007")
+ct1        = cumulatief.tekort2(zon2007M$overschot.pct.jr)
+zon2007M   = uitbreiden.dataserie.met.tekorten(zon2007M, ct1$benodigde_buffer)
+index(zon2007M) = as.Date(format(index(zon2007M), "%Y-%m-15")) # centreer datum bij maandweergave
+plot.tekort.zon.2007 =  grafiek.tekort(zon2007M, 
+                                         title      = paste0("Figuur 3.3. Opbrengstvariatie per maand"),
+                                         subtitle   = paste0("Maandopbrengst als percentage van de jaaropbrengst"),
+                                         toontekst  = TRUE,
+                                         toonbuffer = FALSE,
+                                         rounding=1)
+plot.tekort.zon.2007
+
+opbrengst.jan = zon2007M$productie.pct.jr[1]
+productie.jan = 100*abs(opbrengst.jan/8.333 -1)
+
+opbrengst.mei = zon2007M$productie.pct.jr[5]
+onderproductie.mei = 100*abs(opbrengst.mei/8.333-1) 
+
+# berekening lopend tekort voor herfst
+opbrengsttekort = sum(round(8.333 - zon2007M$productie.pct.jr[10:12],1))
+
+```
+
+Er blijkt een duidelijk seizoenseffect uit figuur 3.3. Het is een beetje een ongewoon jaar in de zin dat de meeste opbrengst niet in juni en juli valt, hetgeen aangeeft dat ook weersinvloeden een factor van belang zijn. In tegenstelling tot wind is hier zoals verwacht de zomer de beste periode. In de winter zakt de opbrengst daarentegen tot ver onder het gemiddelde. Januari brengt `r round(opbrengst.jan,1)`% op, dat is `r round(productie.jan)`% minder dan gemiddeld. Mei is een maand met overvloed, hier kan `r round(onderproductie.mei)`% meer dan gemiddeld worden geproduceerd.
+
+Figuur 3.3 maakt de seizoensinvloeden inzichtelijk, maar de opbrengstvariatie die binnen een maand optreedt blijft verborgen. Figuur 3.4 toont de opbrengst op dagbasis voor de maand september in 2007. In totaal had deze maand een (bijna) gemiddelde opbrengst, dus in principe dekkend voor het energieverbruik in die maand. 
+
+```{r opbrengstvariatiezon2007.d.plot, echo=FALSE, results='asis', fig.cap="", fig.pos="b", fig.height=3, fig.width=5, fig.align='center'}
+
+zon2007M.d  = Bereken.Opbrengst.Zon(PERIODICITEIT="daily", periode="2007-09")
+ct2         = cumulatief.tekort2(zon2007M.d$overschot.pct.jr)
+zon2007M.d  = uitbreiden.dataserie.met.tekorten(zon2007M.d, ct2$benodigde_buffer)
+#index(zon2007E.d) = as.Date(format(index(zon2007E), "%Y-%m-15"))
+plot.tekort.zon.2007M.d =  grafiek.tekort(zon2007M.d, 
+                                         title    = paste0("Figuur 3.4. Opbrengstvariatie per dag"),
+                                         subtitle = paste0("Opbrengst als percentage van de jaaropbrengst in 2007"),
+                                         toontekst= FALSE,
+                                         toonbuffer = FALSE)
+opbrengst.1709      = zon2007M.d$productie.pct.jr[17]
+onderproductie.1709 = 1-opbrengst.1709/(100/365)
+
+gem.dag = mean(zon2007M.d$productie.pct.jr)
+aantal.dagen.50pct.meer  = length(which(zon2007M.d$productie.pct.jr > gem.dag*1.5))
+aantal.dagen.50pct.minder = length(which(zon2007M.d$productie.pct.jr < gem.dag*0.5))
+
+plot.tekort.zon.2007M.d
+
+```
+
+Figuur 3.4 laat echter zien dat de maand september zelf op dagbasis nog aanzienlijke variatie kende. In deze september waren er `r aantal.dagen.50pct.meer` dagen waar er ruim 50% meer dan gemiddeld kon worden geproduceerd. Omgekeerd kwam er op `r aantal.dagen.50pct.minder` dagen in deze maand minder dan de helft van het gemiddelde binnen. 
+
+### Zonarme maanden
+
+```{r opbrengstvariatie2018j, echo=FALSE, results='asis', fig.cap="", fig.pos="b", fig.height=3, fig.width=6, fig.align='center'}
+
+zon2018j = Bereken.Opbrengst.Zon(PERIODICITEIT="10min", periode="2018")
+ct2      = cumulatief.tekort2(zon2018j$overschot.pct.jr)
+zon2018j = uitbreiden.dataserie.met.tekorten(zon2018j, ct2$benodigde_buffer)
+
+#index(wind2007E.d) = as.Date(format(index(wind2007E), "%Y-%m-15"))
+plot.tekort.zon2018j =  grafiek.tekort(zon2018j["2018-01"], 
+                                           title    = paste0("Figuur 3.5. Opbrengstvariatie Januari 2018"),
+                                           subtitle = "",
+                                           toontekst= FALSE, toonbuffer = FALSE)
+plot.tekort.zon2018j
+
+gem.opbrengst.10min = 100/(365*24*6)
+opbrengst.deze.maand.tov.vraag = mean(zon2018j["2018-01"]$productie.pct.jr)/gem.opbrengst.10min
+
+genoeg.zon.uren = length(which(zon2018j["2018-01"]$productie.pct.jr>gem.opbrengst.10min)) / 6
+maanduren = 24*31
+percentage.van.de.maand.met.tekort = round((1-genoeg.zon.uren/maanduren)*100)
+
+```
+
+De grootste tekorten zijn te verwachten in maanden met weinig zon. Dat is doorgaans in de winter. Figuur 3.5 laat januari van 2018 zien. Aan het wit onder de stippellijn is te zien dat er een groot tekort aan zon is. Er zijn in de hele maand slechts `r r0(genoeg.zon.uren)` uren waarin de zon voldoende opbrengt om aan de vraag te voldoen. Januari telt in totaal 744 uren. Dat betekent dat er `r r0(percentage.van.de.maand.met.tekort)`% van de tijd een tekort is.
+
+Net zoals dat bij wind het geval was, blijkt ook bij zon dat vraag en aanbod niet goed op elkaar zijn afgestemd. Dat tekort is vooral 's nachts en in de winter groot, maar ook een bewolkte dag kan voor een tekort zorgen. De tekorten zijn dieper en langer dan bij windenergie. Ook hier zullen deze moeten worden opgevangen om de energievoorziening op peil te houden. 
+
+## Fluctuaties opvangen met opslag
+
+De variatie in opbrengst van zonne-energie kan, net zoals dat bij windenergie werd gedaan, met behulp van een vorm van energie-opslag vereffend worden. Eerst maar kijken naar opslag. Figuur 3.6 simuleert de opbrengst van zonne-energie voor een periode van tien jaar, gebaseerd op de tienminutendata van het KNMI. De hoeveelheid zonnecellen wordt weer zodanig gekozen dat de totaalopbrengst gelijk is aan het nationaal verbruik. 
+
+```{r infographic_opslag_zon, echo=FALSE, results='asis', fig.cap="", fig.pos="t", fig.height=5.5, fig.width=7.5, fig.align='center'}
+
+set20062015.zon = Bereken.Opbrengst.Zon(PERIODICITEIT="monthly", periode="2006::2015") 
+gem_opbrengst.z = mean(set20062015.zon$opbrengst.kWh.km2) / 1e6
+perio           = periodiciteit.per.jaar(set20062015.zon)
+
+# --- Berekening opslag hoofdscenario
+# voor later, berekening buffercapaciteit per 10 minuten
+set20062015h.zon  = Bereken.Opbrengst.Zon(PERIODICITEIT="10min", periode="2006::2015") 
+ct3               = cumulatief.tekort2(set20062015h.zon$overschot.pct.jr)
+set20062015h.zon  = uitbreiden.dataserie.met.tekorten(set20062015h.zon, ct3$benodigde_buffer)
+set20062015h.zon$buffer = cummax(set20062015h.zon$benodigde_buffer)
+benodigde.buffergrootte.20062015Zm.pct.jr = max(max(set20062015h.zon$buffer), max(set20062015h.zon$lopend_overschot))
+
+# Berekening bijdraaien hulpbronnen hoofdscenario
+# alle overproductie gaat verloren, dus we kijken alleen naar de verliesuren
+gem.10minproductie    = mean(set20062015h.zon$opbrengst.kWh.km2)
+verliesvakken.indexen = which(set20062015h.zon$opbrengst.kWh.km < gem.10minproductie)
+verliesvakken         = set20062015h.zon$opbrengst.kWh.km2[verliesvakken.indexen]
+tekorten              = verliesvakken - gem.10minproductie
+# bereken ook het surplus
+surplusvakken.indexen = which(set20062015h.zon$opbrengst.kWh.km >= gem.10minproductie)
+surplusvakken         = set20062015h.zon$opbrengst.kWh.km2[surplusvakken.indexen]
+overschotten          = surplusvakken - gem.10minproductie
+
+# controle of we echt alleen verliesuren hebben
+stopifnot(length(which(tekorten>0))==0) 
+tekort.als.fractie.van.10jaars.productie    = abs(sum(tekorten)/sum(set20062015h.zon$opbrengst.kWh.km2))
+overschot.als.fractie.van.10jaars.productie = abs(sum(overschotten)/sum(set20062015h.zon$opbrengst.kWh.km2))
+
+stopifnot(round(tekort.als.fractie.van.10jaars.productie,3)==round(overschot.als.fractie.van.10jaars.productie,3)) # overschotten zijn gelijk aan de tekorten
+
+dataset = set20062015h.zon # deze dataset heeft een resolutie van 10min, maar de figuur is per maand.
+
+# dus nu moeten we aggregreren naar maanden, maar met de buffer krijgen we dan andere cijfers
+opslag = cbind(apply.monthly(dataset$productie.pct.jr, FUN=sum),
+               apply.monthly(dataset$benodigde_buffer, FUN=sum))
+opslag$benodigde_buffer = opslag$benodigde_buffer / (6*24*365/12) # dit is niet 100% correct, maar ruim precies genoeg voor dit onderzoek (niet iedere maand heeft evenveel dagen)
+
+plot.opslag = grafiek.tekort(opslag, 
+               title    = paste0("Figuur 3.6. Simulatie van tien jaar zonne-energie met opslag"),
+               subtitle = paste0("Scenario waarin alle energie in Nederland wordt opgewekt via zon (20% rendement)"),
+               toonbuffer = FALSE, toontekst=FALSE)
+
+plot.opslagbuffer = grafiek.buffercapaciteit(opslag,
+                                             title="Laadtoestand denkbeeldige accu",
+                                             subtitle=paste0("Accu ter grootte van ", round(benodigde.buffergrootte.20062015Zm.pct.jr),"% van het jaarverbruik"),
+                                             caption="")
+grid.arrange(plot.opslag, plot.opslagbuffer, ncol = 1, heights = c(6, 5))
+
+```
+
+Zowel de productie van energie in het bovenste staafdiagram als het verloop van de laadtoestand in het onderste staafdiagram vertonen grote regelmaat. Het is opvallend dat het patroon zo regelmatig is, veel regelmatiger dan voor windfluctuaties het geval was. Op maandbasis is de zoninstraling redelijk voorspelbaar (alhoewel er op dagbasis aanzienlijke variatie is). 
+
+In de onderste figuur wordt de laadtoestand weergegeven van een denkbeeldige accu. Deze denkbeeldige accu heeft een capaciteit ter grootte van `r round(benodigde.buffergrootte.20062015Zm.pct.jr)`% van het jaarlijks Nederlands energieverbruik. Dat is precies voldoende om in deze tien jaar alle zonarme perioden op te kunnen vangen. De accu volgt het ritme van de seizoenen. In de late zomer is de accu op z'n volst en in de winter wordt de laagste stand bereikt.  
+
+Merk op dat in 2009 de laadtoestand even de 0% raakt: de accu is nu helemaal leeg. Kleiner kan de accu dus niet zijn, anders onstaat er een energietekort. De capaciteit van de accu in deze simulatie komt overeen met `r round(benodigde.buffergrootte.20062015Zm.pct.jr)`% van het jaarverbruik. Dat is gelijk aan ongeveer vier maanden Nederlands energiegebruik. 
+
+## Zonne-energie in combinatie met een hulpbron
+
+Vervolgens kan er gekeken worden naar dezelfde periode van tien jaar met dezelfde fluctuaties in opbrengst, maar ditmaal wordt er gebruik gemaakt van een hulpbron om de tekorten op te vangen. Figuur 3.7 toont weer maandtotalen, gebaseerd op tijdsvakken van 10 minuten. 
+
+```{r infographic_hulpbronnen, echo=FALSE, results='asis', fig.cap="", fig.pos="!t", fig.height=5, fig.width=7.5, fig.align='center'}
+
+avg.pct = 100/(6*24*365)
+dataset = set20062015h.zon # deze dataset heeft een resolutie van 10min, maar de figuur is per maand.
+
+# we proberen het gewoon nog een keer
+hulpbron = dataset$productie.pct.jr - avg.pct # creeer een array die overschot (+) en tekort (-) aangeeft
+hulpbron$zon        = ifelse(hulpbron$productie.pct.jr<0, hulpbron$productie.pct.jr+avg.pct, avg.pct)
+hulpbron$ongebruikt = ifelse(hulpbron$productie.pct.jr>0, hulpbron$productie.pct.jr, 0)
+hulpbron$hulpbron   = ifelse(hulpbron$productie.pct.jr<0, abs(hulpbron$productie.pct.jr), 0)
+
+# percentuele opbrengstverdeling op basis van 10min data:
+hulppct    = sum(hulpbron$hulpbron)/10   # 39%
+windpct    = sum(hulpbron$zon)/10       # 61%  
+surpluspct = sum(hulpbron$ongebruikt)/10 # 39% -> wind+surplus=100%, hulp is ook 39%. Prima
+
+h2 = cbind(apply.monthly(hulpbron$ongebruikt, FUN=sum),
+           apply.monthly(hulpbron$hulpbron, FUN=sum),
+           apply.monthly(hulpbron$zon, FUN=sum))
+
+# Hier hebben we een probleem, want maanden zijn niet allemaal even lang.
+# Alles herschalen zodat we per maand netjes op 8,333% komen. Dat is niet
+# /helemaal/ correct, maar wel inzichtelijk en hoge precisie is voor dit
+# project niet belangrijk.
+rs = rowSums(h2[, 2:3])
+for (i in 2:3) h2[,i] = (h2[,i]/rs) * (100/12)
+data.hulpbron = xtsmelt(h2)
+
+colnames(data.hulpbron) = c("Date","Energieopbrengst","value")
+# "italic(Bijschrift)\n First~line \n italic('and a second,')~bold('fancy one') \n 'also,'~integral(f(x)*dx, a, b)~'for good measure'"
+ggplot(data.hulpbron, aes(fill=Energieopbrengst, y=value, x=Date)) + 
+  geom_bar(position="stack", stat="identity") +
+  geom_hline(yintercept=8.333, linetype="dashed", color = "red") +
+  theme_maas() + 
+  labs(title    = "Figuur 3.7. Simulatie van tien jaar zonne-energie met hulpbronnen", 
+       subtitle = "Scenario waarin alle energie in Nederland wordt opgewekt met zonnecellen \nmet een rendement van 20%",
+       caption  = "Data: KNMI Data Platform") +
+  ylab("Opbrengst (% van jaarverbruik)") + xlab("") +
+  scale_fill_manual(values=c("#999999", "#56B4E9","yellow", "#E69F00") ) +
+  theme(legend.position="bottom", legend.title = element_blank())
+
+```
+
+\noindent
+Het volgende beeld onstaat. Door energie bij te draaien wordt iedere maand inderdaad precies aan de energiebehoefte van Nederland voldaan. Zonne-energie (geel) en hulpbron (blauw) tezamen reiken tot de stippellijn: het verbruik van Nederland. Tevens is te zien dat er zonne-energie onbenut blijft, de grijze staven. Dat komt omdat in een scenario met enkel een hulpbron, dus zonder opslag, deze energie niet inzetbaar is. Het verlies van 'nuttige' capaciteit is groot.
+
+Wie figuur 3.6 vergelijkt met 3.7, valt het misschien op dat de overproductie in 3.7 wel groter lijkt dan het surplus in figuur 3.6. Bij de telling in figuur 3.7 wordt er onderscheid gemaakt tussen tijdsvakken met een overschot en tijdsvakken met een tekort. In figuur 3.7 is de optelling van de gele staven en de grijze staven gelijk aan de hoogte van maandstaven in figuur 3.6. Dit onderscheid ontbreekt in figuur 3.6. De extra informatie die figuur 3.7 biedt, maakt duidelijk hoeveel van de opbrengst surplus was, en hoeveel direct aan gebruikers geleverd kon worden.         
+
+Zonne-energie zorgt in totaal voor `r round(100*(1-tekort.als.fractie.van.10jaars.productie))`% van de jaarlijkse energie en de hulpbron moet dus `r round(100*tekort.als.fractie.van.10jaars.productie)`% van de benodigde energie bijdraaien.
+
+Ook hier geldt, net zoals werd geconstateerd bij windenergie, dat op momenten dat de zon niet schijnt, de hulpbron de totale last van de energievraag op z'n schouders krijgt. De hulpbron moet ook hier het vermogen hebben om de nationale vraag te dekken en nis daarmee op zichzelf ook dekkend voor onze energiebehoefte.  
+ 
+

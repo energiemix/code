@@ -1,0 +1,36 @@
+.book.font-family-1 {
+  font-family: Georgia, serif;
+}
+.book.font-family-0 {
+  font-family: Cambria, sans-serif;
+}
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+
+h1, h2, h3, h4 {
+  font-family: Cambria, sans-serif;
+  color: #2f5275;
+}
+
+.title {
+  font-family: Cambria, sans-serif;
+  font-size: 3em !important;
+  color: #2f5275;
+ }
+
+.subtitle {
+  font-family: Cambria, sans-serif;
+  color: gray;
+}

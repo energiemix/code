@@ -1,0 +1,184 @@
+# (APPENDIX) Appendix {-}
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(cache=TRUE, fig.pos="tbp") # fig.pos="!H" , fig.pos="tbp"
+options(scipen=999)
+library(knitr, quietly=TRUE); library(kableExtra, quietly = TRUE)
+library(qtl, quietly = TRUE)
+
+source("Energietransitie8.R")
+
+```
+
+# Windenergie
+
+## Een volmaakte windmolen
+
+\bigskip
+Een enkele, 'volmaakte' windmolen haalt het theoretisch maximum aan energie uit de langsstromende lucht. De hoeveelheid bewegingsenergie die lucht bevat is afhankelijk van de windsnelheid $v$ en de luchtdichtheid $\rho$ (1,3 kg/m^3^). Bewegende lucht die stroomt door een vierkante meter heeft een vermogen dat gelijk is aan 
+
+$$ \frac{1}{2} \rho v^3 $$
+\noindent
+Watt (zie bijvoorbeeld [MacKay](https://www.withouthotair.com/download.html)). Een windmolen met grotere wieken vangt meer wind en zal daardoor meer vermogen leveren. De oppervlakte die de wieken beslaan, een cirkel met een diameter $d$, is gelijk aan $\pi (\frac{1}{2} d)^2$.  De stromende lucht door het oppervlak van de wieken kan dus een maximaal vermogen leveren van
+
+$$ \frac{1}{2} \rho v^3 \times \pi  (\frac{1}{2} d)^2 = \frac{1}{2} \rho v^3 \; \frac{\pi}{4} d^2$$
+\noindent
+Watt. De molen zelf onttrekt energie aan de bewegende lucht en de lucht vertraagt daarmee. Zou je alle energie uit de lucht halen, dan waait het niet meer. En als het niet waait dan draait de molen niet meer. Er zit dus een maximum aan de hoeveelheid energie die men uit stromende lucht kan onttrekken.
+
+\medskip
+Een ander effect van de luchtvertraging is dat je windmolens niet te dicht bij elkaar kunt zetten. Ze hebben dan teveel last van elkaars windschaduw. Windparken houden doorgaans een afstand aan van tussen de [6-10 wiekdiameters](https://en.wikipedia.org/wiki/Wind_turbine#Wind_turbine_spacing). Een windmolen bezet een landoppervlakte van $(sd)^2$ m^2^, waarbij $s$ de separatieafstand in wiekdiameters is. Als we ons nu afvragen hoeveel vermogen er door een windmolen per m^2^ landoppervlak kan worden gegenereerd, dan blijkt de diameter van de wieken weg te vallen (zie ook [MacKay](https://www.withouthotair.com/download.html)):
+
+$$ \frac{\frac{1}{2} \rho v^3 \frac{\pi}{4} d^2}{(sd)^2} = \; \frac{\pi}{8s^2} \; \rho v^3 $$
+\noindent
+De spanwijdte maakt dus niet uit! Grotere windmolens leveren meer vermogen, maar ze moeten ook verder uit elkaar geplaatst worden dan kleine molens. Het geleverde vermogen per vierkante meter is slechts afhankelijk van de windsnelheid en hoe ver de molens uit elkaar geplaatst worden.  
+
+\medskip
+Een windmolen kan niet alle beschikbare kinetische energie die in wind zit onttrekken. Volgens de [wet van Betz](https://nl.wikipedia.org/wiki/Wet_van_Betz) kan maximaal 59% van deze energie worden omgezet. Een betere efficiëntie is niet haalbaar, hoe goed de windmolen ook ontworpen wordt. Een volmaakte molen heeft daarmee een opbrengst van 
+
+$$  59\% \times \frac{\pi}{8s^2} \; 1.3 v^3\approx \frac{0.3\;v^3}{s^2} \;  $$
+Watt per m^2^. We kunnen dus onafhankelijk van de grootte van de windmolen zeggen welke opbrengst we mogen verwachten als we uitgaan van een volmaakte windmolen. 
+
+\bigskip
+Tot nu toe geeft de afgeleide formule de theoretische energie-opbrengst weer van een vierkante meter in een windmolenpark. Windmolens hebben echter last van elkaars windschaduw en met deze verliezen werd nog niet rekening gehouden. Hoe groot zijn deze verliezen?  
+
+\medskip
+Uit onderzoek van [Meyers & Meneveau](https://www.researchgate.net/publication/230284417_Optimal_turbine_spacing_in_fully_developed_wind_farm_boundary_layers) blijkt dat windmolens die in een windpark zijn opgesteld veel turbulentie veroorzaken. Deze turbulentie zorgt voor een aanzienlijke vermindering van de opbrengst. Dit zorgt er voor dat de energie-opbrengst van een molen in een windpark minder is dan die van een alleenstaande molen. 
+
+\medskip
+De figuur hieronder, overgenomen uit [Meyers & Meneveau](https://www.researchgate.net/publication/230284417_Optimal_turbine_spacing_in_fully_developed_wind_farm_boundary_layers), toont het verband tussen efficiëntie en afstand. De figuur geeft vermogen van een molen staande in een oneindig windpark weer, ten opzichte van het vermogen van een alleenstaande molen. Het genormaliseerde vermogen is afgezet tegen de onderlinge afstand $s$ in wiekdiameters.  
+
+```{r, echo=FALSE, fig.height=2.5, fig.width=5, fig.align='center', out.width="35%", out.height="35%", fig.cap="Efficiëntie ten opzichte van separatie-afstand", fig.pos="H"}
+knitr::include_graphics("D:/Dropbox/Maas/klimaat/klimaatR/VermogenVersusSeparatieafstandMolens.jpg")
+```
+
+\medskip
+De theoretische benadering van [Meyers & Meneveau](https://www.researchgate.net/publication/230284417_Optimal_turbine_spacing_in_fully_developed_wind_farm_boundary_layers) wordt bevestigd door metingen aan windparken in de praktijk. De driehoeken in de figuur geven metingen weer van Horns Rev, een windpark op zee in Denemarken ($s=7$). Horns Rev haalt een efficiëntie van 60% ten opzichte van een alleenstaande molen ($P_\infty=0.6P$). Pas bij een afstand van 100 maal de wiekdiameter nadert de efficiëntie de 100%. Het onderzoek pleit voor een afstand van minimaal 15; volgens de grafiek is de efficiëntie dan zo rond de 80%. Dat is een afstand die windparken in de praktijk op dit moment bij lange na niet hanteren.  
+
+\medskip
+Dit verlies aan opbrengst moet worden verrekend. Het opwekken van grote hoeveelheden windenergie vereist de plaatsing van molens in windparken. De formule wordt daarom uitgebreid. De energie-opbrengst wordt vermenigvuldigd met de verwachte efficiëntie $e_s$ van een windpark met molens:  
+
+$$  e_s \; \frac{0.3\;v^3}{s^2}  $$
+De efficiëntie van een windmolenpark wordt dan aan de hand van de gekozen separatieafstand opgezocht in de figuur van Meyers & Meneveau. 
+
+## Windmolens in de praktijk
+
+\bigskip
+Een [windmolen](https://en.wikipedia.org/wiki/Wind_turbine) wordt [ontworpen](https://en.wikipedia.org/wiki/Wind_turbine_design) op het snelheidsbereik waarvan men de hoogste opbrengst verwacht. Buiten dat bereik is deze minder efficiënt. De onderstaande figuur geeft de vermogenscurve weer voor de Enercon-126, in magenta, zoals deze door de fabrikant wordt verstrekt. Tevens is de theoretische vermogenscurve weergegeven, in blauw, zodat beide met elkaar vergeleken kunnen worden. Een aantal dingen vallen op. 
+
+\medskip
+De opbrengst van de Enercon ligt altijd lager dan de theoretische. Dat is natuurlijk de verwachting, want meer dan het theoretisch maximum kan men niet halen. De aard van beide curven is anders: waar het vermogen in theorie blijft stijgen bij toenemende windsnelheid, wordt de curve van een echte windmolen op een goed moment afgekapt. De Enercon komt tot een windsnelheid van 10 m/s goed mee met de theorie. Dit is het snelheidsbereik waarop de molen effectief is. Als men leest over de efficiëntie van windmolens - die halen tegenwoordig 80% - dan is dat over dit snelheidsbereik. Boven de 15 m/s neemt het vermogen niet meer toe, en tussen de 25 en 35 m/s wordt de molen uitgeschakeld. Hier levert de molen bij lange na niet wat theoretisch verwacht zou worden. 
+
+\medskip
+In de figuur naast de vermogenscurven bevindt zich een frequentiediagram van de windsnelheid. Het geeft aan hoe vaak een bepaalde windsnelheid voorkomt. Te zien is dat winsnelheden boven de 10 m/s relatief zeldzaam zijn. Het is waarschijnlijk geen toeval dat Enercon-126 ontworpen is effectief te zijn tot zo'n 10 m/s. 
+
+\medskip
+Via numerieke integratie, de aanpak die hier wordt gebruikt, is te benaderen wat de opbrengstverschillen zijn. Telt men de opbrengsten over een langere periode (10 jaar) op, dan brengt de Enercon-126 in Nederland ongeveer de helft op van wat men theoretisch zou verwachten. Er is dus een groot verschil in opbrengst tussen theorie en praktijk. Met het huidige ontwerp van windmolens, die worden ontworpen op een bepaald snelheidsbereik, is niet te verwachten dat deze de theorie in de toekomst gaan benaderen. 
+
+\bigskip
+```{r EnerconPowerCurve, echo=FALSE, results='asis', fig.height=2.5, fig.width=5, fig.align='center', fig.pos='H'}
+
+dta = Power.curve.Enercon.126[1:28,]
+powercurves = ggplot(dta) + 
+  geom_line(aes(x=Wind.ms, y=e126.W.m2), color="magenta") + 
+  geom_line(aes(x=Wind.ms, y=betz.W.m2), color="blue") +
+  labs(y=expression("Vermogen (W/m"^2*")"), x="Windsnelheid (m/s)", title="Vermogen") +
+  ylim(0, 36) 
+
+# set die 0.1 m/s nauwkeruigheid heeft
+# windset = Bereken.Opbrengst.Wind2(PERIODICITEIT="10min", periode="::1996-07-01", soort="Betz")
+# alles, gatenkaas na 1996
+windset = Bereken.Opbrengst.Wind2(PERIODICITEIT="10min", periode="2006::2015", soort="Betz")
+distrplot = ggplot(windset) +
+  geom_histogram(aes(x=wind140m), color="gray", fill="blue", binwidth=1) +
+  labs(y="frequentie",x="windsnelheid (m/s)", title="Windsnelheid 135m")
+
+suppressWarnings(grid.arrange(powercurves, distrplot, ncol = 2, widths = c(1,1)))
+
+# data heeft ernstige tekorten vanaf 1997. Gaten in de distributie. 
+# sort(unique(windset$wind.ms))
+
+```
+
+
+## Berekenen van opbrengst
+
+\bigskip
+Mocht dat in de toekomst wel lukken, dan geldt er echter een *trade-off*. Als een windmolen het theoretisch maximum nadert, dan kan de molen per definitie beter gebruik maken van windvlagen, van hogere windsnelheden. Dat betekent ook dat daarmee de energie-opbrengst meer fluctueert. Deze fluctuaties zal men moeten opvangen. Het omgekeerde geldt ook: als een windmolen minder efficient is en minder goed energie kan halen uit hogere windsnelheden, dan zijn de fluctuaties minder. Dat gaat echter ten koste van de opbrengst en dat betekent dat men meer ruimte nodig heeft om molens te plaatsen. 
+
+\medskip
+De bedoeling is hier om een realistische benadering te geven van de energie-opbrengst van een vierkante kilometer bezet met windmolens. Er worden hier twee benaderingen uitgewerkt: een theoretische en een praktische. 
+
+\medskip
+Voor de theoretische benadering kan men uitgaan van de gemiddelde windsnelheid over een lange periode (zeg 10 jaar). Vervolgens kan deze worden gebruikt in de afgeleidde formule ($P = e_s \; \frac{0.3\;v^3}{s^2}$). Dat is de benadering die bijvoorbeeld [MacKay](https://www.withouthotair.com/download.html) heeft gekozen. Voor een realistische schatting van energie-opbrengst heeft dat echter serieuze nadelen. 
+
+Volgens de formule verhoudt de opbrengst zich met de windsnelheid tot de derde macht. Het probleem met windsnelheid middelen over een langere periode is dat de opbrengst wordt onderschat. De gemiddelde windsnelheid in een maand tot de derde macht is kleiner dan de som van de dagelijkse windsnelheden tot de derde macht. Voorbeeld met twee winddagen: $\frac{v_1^3 + v_2^3}{2} \neq (\frac{v_1+v_2}{2})^3$. Neem $v_1=1$ en $v_2=3$, dan volgt $14 \neq 8$. Hoe korter de tijdsperiode is die wordt gehanteerd, hoe groter het uiteindelijke verschil is.  
+
+\medskip
+Eenzelfde probleem geldt voor de praktijkbenadering waarbij wordt uitgegaan van de Enercon-126. De opbrengst wordt nu niet bepaald door een theoretische formule, maar door de windsnelheid op te zoeken in de vermogenscurve (power curve) zoals die wordt verstrekt door de leverancier van de molen. Zie ook bijlage A.2 *windmolens in de praktijk*. Deze power curve heeft geen lineair verloop. Ook hier leidt het optellen van de opbrengst bij diverse windsnelheden tot een andere uitkomst dan het opzoeken van de opbrengst bij de gemiddelde windsnelheid. 
+
+\medskip
+Om te komen tot een betere schatting van energie-opbrengst, wordt de opbrengst niet berekend aan de hand van de gemiddelde windsnelheid over de gehele periode, maar door tijdsvakken van 10 minuten te gebruiken. Het KNMI heeft [data](https://dataplatform.knmi.nl/dataset/cesar-tower-meteo-lc1-t10-v1-0) beschikbaar die de windsnelheid iedere 10 minuten weergeeft op verschillende plaatsen en hoogten in Nederland. Aan de hand van deze data wordt voor ieder tijdsvak van 10 minuten de energie-opbrengst berekend. 
+
+```{r datavoorbeeld1, echo=FALSE, results='asis', fig.height=3, fig.width=6, fig.align='center', fig.pos='H'}
+
+# numeriek bewijs dat power enercon-126 voor gemiddelde windsnelheid niet gelijk is aan de som van de uren 
+# snip = KNMI_wind_zon_uur["2007-04",c("wind.ms","Betz.Wm2","Enercon126.Wm2","opbrengst.Betz.kWh.km2","opbrengst.Enercon126.kWh.km2")]
+# summed.power = sum(snip$Enercon126.Wm2)
+# avg.power = enercon.126.in.W.m2(mean(snip$wind.ms)) * nrow(snip)
+
+knitr::kable(fortify(KNMI_wind_zon_10min["2007-04-01",c("wind140m","Betz.Wm2","Enercon126.Wm2","opbrengst.Betz.kWh.km2","opbrengst.Enercon126.kWh.km2")][1:5]), booktabs=T, digits=2, caption = "Voorbeeld van opbrengstgegevens", linesep = "", col.names=c("Tijd","Wind (m/s)","Betz (W/m2)","Enercon-126 (W/m2)","Opbrengst Betz (kWh/km2)","Opbrengst Enercon-126 (kWh/km2)"), align = "r") %>%
+  kable_styling(font_size = 10, latex_options = "HOLD_position") %>%
+  column_spec(2:6, width = "2cm")
+
+```
+
+\bigskip
+Voor langere perioden wordt de opbrengst gesommeerd, bijvoorbeeld de dagopbrengst is gelijk aan de som van de 144 vakken van 10 minuten in die dag. De opbrengst wordt zowel berekend door gebruik te maken van de formule (hier 'Betz' genoemd), als door de windsnelheid van iedere 10 minuten op te zoeken in de power curve van de Enercon-126. In tabel 1 is dat gedaan en ziet men enige uitkomsten zoals deze in de berekeningen zijn gebruikt. 
+
+\medskip
+De theoretische opbrengst in W/m^2^, de derde kolom ('Betz'), wordt berekend door de windsnelheid in de tweede kolom te nemen en in te vullen in $e_s \; \frac{0.3\;v^3}{s^2}$ in $v$ en voor $s=7$ en $e_s=0.6$ te nemen. De energie-opbrengst wordt berekend door W/m^2^ om te zetten in kWh per km^2^. Voor de Enercon wordt in de power curve (zie bijlage A.2 *windmolens in de praktijk*) de opbrengst in kW bij een bepaalde windsnelheid opgezocht. Dan wordt berekend wat er in kWh wordt geproduceerd op een oppervlak bezet met molens met een separatieafstand van 7 wiekdiameters. De laatste twee kolommen geven die opbrengst in kWh per vierkante kilometer weer voor 'Betz' en de Enercon. 
+
+\bigskip
+```{r EnerconPowerCurve2, echo=FALSE, results='asis', fig.height=2.5, fig.width=4, fig.align='center', fig.pos='H'}
+dta = Power.curve.Enercon.126[1:28,]
+ggplot(dta) + 
+  geom_line(aes(x=Wind.ms, y=power.kW), color="magenta") + 
+  labs(y="Vermogen (kW)", x="Windsnelheid (m/s)", title="Vermogenscurve Enercon-126",
+       caption = "Bron: Enercon") 
+```
+
+## Berekenen van lopend tekort
+
+\bigskip
+Figuur 4 (zie tekst) geeft de maandelijkse tekorten en overschotten weer voor een windpark ten opzichte van de gemiddelde opbrengst van dat jaar. Het blijkt echter dat er grote maandelijkse verschillen zitten in de windkracht. Er zijn maanden met een overproductie t.o.v. het gemiddelde, en er zijn maanden met een tekort. 
+
+\medskip
+Uit figuur 4 blijkt dat in 2007 de maand januari de meeste wind had. In deze maand zou 16,2% van de jaaropbrengst zijn binnengekomen. De zomer daarentegen kent een periode van drie maanden achtereen met tekorten. 
+
+\medskip
+In opeenvolgende maanden met tekorten stapelt het tekort zich vervolgens op, omdat de tekorten blijven aanhouden. Laten we eens kijken hoe dat in 2007 uitpakt. In 2007 was er van januari tot en met maart ruim voldoende wind voorhanden om aan de vraag te voldoen. Oktober daarentegen had een groot tekort. In die maand was er een tekort van 8,3% - 4,6% = 3,7% van de jaarlijkse energiebehoefte. Dat is dus een tekort van 45% (3,7 / 8,3 = 0,45) op maandbasis. Dat (lopende) tekort wordt de maand daarop in mei niet teruggewonnen, ondanks dat het een windrijke maand was. In juni, de maand daarna, verdiept het tekort verder. In totaal ontstaat er in 2007 zo een tekort dat oploopt tot (8,3-5,6) + (8,3-7,5) + (8,3-4,7) + (8,3-7,2) + (8,3-5,4) + (8,3-6,9) + (8,3-4,6) = 16,5% van de opbrengst in dat jaar.
+
+\medskip
+In dit voorbeeld werden tekorten berekend aan de hand van maandopbrengsten. Een jaar heeft slechts 12 maanden, dus het blijft overzichtelijk en er valt gemakkelijk uit de grafiek te tellen. Het is wel een enigzinds grove telling zo. Naarmate het tijdsinterval afneemt zal het gemeten tekort toenemen. Immers, een maand die gemiddeld genoeg opbrengst heeft, kan best zijn begonnen met twee weken windstilte. Die windstilte blijft onzichtbaar, maar had eigenlijk bij een eventueel lopend tekort van vorige maanden moeten worden opgeteld. Om een betere benadering van het maximale tekort te krijgen worden de energietekorten elders in de tekst in tijdsvakken van 10 minuten berekend.
+
+
+# Zonne-energie
+
+## Berekenen van opbrengst
+
+\medskip
+Om de opbrengst van zonnecellen te berekenen wordt stralingsdata van het KNMI gebruikt, gemeten nabij meetmast Cabauw, midden in het land. De data geeft voor het tijdsvak van 10 minuten de gemiddelde globale straling in Watt per vierkante meter. Aan de hand van deze data wordt voor ieder tijdsvak van 10 minuten de energie-opbrengst berekend. Voor langere perioden wordt de opbrengst gesommeerd, bijvoorbeeld de dagopbrengst is gelijk aan de som van de 144 vakken van 10 minuten in die dag. In tabel B.1 ziet men enige uitkomsten zoals deze in de berekeningen zijn gebruikt. 
+
+```{r datavoorbeeld2, echo=FALSE, results='asis', fig.height=3, fig.width=6, fig.align='center'}
+
+knitr::kable(fortify(KNMI_wind_zon_10min["2007-04-01",c("straling.Wm2","opbrengst.zonnecel.kWh.km2")][60:65]), booktabs=T, digits=2, caption = "Voorbeeld van opbrengstgegevens", linesep = "", col.names=c("Tijd","straling (W/m2)","Opbrengst zonnecel (kWh/km2)"), align = "r") %>%
+  kable_styling(font_size = 10, latex_options = "HOLD_position") %>%
+  column_spec(2:3, width = "2cm")
+
+```
+
+\bigskip
+In de tekst wordt uitgegaan van zonnepanelen met een rendement van 20%. De opbrengst wordt weergegeven in kilowattuur per vierkante kilometer. De straling wordt door het KNMI in tijdsvakken van 10 minuten weergegeven in watt per vierkante meter (W/m^2^). De berekeningen werken verder met de kilowattuur (kWh), dus de waarde in watt voor de 10 minuten wordt eerst omgezet naar wattuur. Daartoe wordt de waarde van de kolom straling gedeeld door 6: 575,48 W / 6 = 95,91 Wh (per 10 min). Vervolgens wordt er gedeeld door 1.000 om van W naar kW te komen en dan maal een miljoen om van vierkante meter naar vierkante kilometer te komen: (95,5 / 1.000) * 1.000.000 = 95.913,33 kWh/km^2^. Dan, omdat de panelen een efficiëntie van 20% hebben, blijft daar een vijfde van over. Daarmee wordt de uitkomst in de kolom 'opbrengst' verkregen: 95.913,33 * 20% = 19.182,72 kWh/km^2^.     
+
+

@@ -34,7 +34,7 @@ urlcolor: CornflowerBlue # Black
 <!-- 3. pas urlcolor aan naar black voor PRINT (footnotes), en blauw voor PDF -->
 
 <!-- Render git_book: -->
-<!-- Ga naar 06-Simulaties en verander knitr_compile_formaat naar "html" -->
+<!-- HOEFT NIET MEER: Ga naar 06-Simulaties en verander knitr_compile_formaat naar "html" -->
 <!-- bookdown::render_book() -->
 <!-- Publiceren naar energiemix.github.io:
      cd energiemix.github.io
@@ -42,6 +42,7 @@ urlcolor: CornflowerBlue # Black
      git commit -m "beschrijf commit"
      git push -u origin main
 -->
+
 <!-- whatsapp media icon gaat niet lekker. Dit werkt (manual edit):
  <meta property="og:image" content="http://energiemix.github.io/DEDsmall.png" />
   <meta property="og:image:type" content="image/png" />

@@ -1,0 +1,8 @@
+book_filename: "De energietransitie doorgerekend"
+output_dir: "energiemix.github.io"
+language:
+  ui:
+    chapter_name: ""
+delete_merged_file: true
+rmd_files: ["index.Rmd","00-Toewijding.Rmd","01-Inleiding.Rmd","02-Verbruik.Rmd","03-Windenergie.Rmd","04-Zonne-energie.Rmd","05-Opslag.Rmd","06-Simulaties.Rmd","07-Epiloog.Rmd","08-Appendix.Rmd"]
+new_session: yes

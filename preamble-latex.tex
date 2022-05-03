@@ -1,0 +1,50 @@
+\usepackage{float}
+\usepackage[dutch]{babel}
+
+\pagestyle{plain}
+\setlength{\parindent}{24pt}
+\setlength{\parskip}{2pt}
+
+% zorg dat notes aan het eind van het hoofdstuk komen
+% below is a trick that turns hyperlinks in text into footnotes: 
+% \renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+% \usepackage{endnotes}
+% \let\footnote=\endnote
+% \renewcommand{\notesname}{Eindnoten}
+
+% truuk om figuren tegen elkaar aan te krijgen
+\newcommand{\squeezeup}{\vspace{-2.5mm}}
+
+\usepackage{xcolor}
+\definecolor{figachtergrond}{HTML}{F3F1ED}
+\definecolor{boxachtergrond2}{HTML}{EEDBC3}
+\definecolor{backbrown}{HTML}{F6EEDD}
+\definecolor{headbrown}{HTML}{4C2B00}
+\definecolor{backmoccasin}{HTML}{FFF0D7}
+\definecolor{headmoccasin}{HTML}{4C2B00}
+\definecolor{backblue}{HTML}{EEFAFF} 
+\definecolor{headblue}{HTML}{013A4D}
+\definecolor{financialtimes}{HTML}{FFEDEF}
+
+\definecolor{onbenutsurplus}{HTML}{E8C4C4}
+\definecolor{benutsurplus}{HTML}{C6E1BF}
+\definecolor{hulpbron}{HTML}{56B4E9}
+\definecolor{opslag}{HTML}{006300}
+\definecolor{wind}{HTML}{00FF00}
+\definecolor{zon}{HTML}{FFFF00}
+
+\usepackage{tcolorbox}
+\newtcolorbox{inhetkortbox}{
+  colback=backbrown,
+  colframe=white,
+  coltext=headmoccasin,
+  boxsep=5pt,
+  arc=1pt}
+\newtcolorbox{infobox}{
+  colback=backblue,
+  colframe=white,
+  coltext=headblue,
+  boxsep=5pt,
+  arc=1pt}
+
+\usepackage{colortbl}
